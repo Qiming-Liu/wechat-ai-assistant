@@ -46,10 +46,15 @@ def onOneSecond():
                 all_messages = '\n'.join([f"{message['who']}: {message['content']}" for message in messages])
                 
                 # 获取AI回复
-                response = ai_response(
+                response1 = ai_response(
                     chat_id,
                     all_messages
                 )
+                if chat_id in SUGGEST_LIST:
+                    response2 = ai_response(
+                        chat_id,
+                        all_messages
+                    )
                 
                 # 把所有未回复的消息标记为已回复
                 for message in unreplied_messages:
@@ -57,9 +62,9 @@ def onOneSecond():
                     
                 # 发送回复
                 if chat_id in SUGGEST_LIST:
-                    send_message_to_file_helper(response, chat_id)
+                    send_message_to_file_helper([response1, response2], chat_id)
                 if chat_id in REPLAY_LIST:
-                    wx.SendMsg(response, chat_id)
+                    wx.SendMsg(response1, chat_id)
                 
 def main():
     init_log()
