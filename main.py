@@ -1,9 +1,10 @@
 from src.wx import wx, start_listen, send_message_to_file_helper
 from src.ai import ai_response
 from src.config import AUTO_REPLY_DELAY, REPLAY_LIST, SUGGEST_LIST
-from src.log import init_log
+from src.log import init_log, log
 import time
 import pandas as pd
+import traceback
 
 message_manager = {}
 
@@ -16,40 +17,34 @@ def onMessage(chat, message):
     if type == 'friend':  # 对方发送的消息
         if chat_id not in message_manager:
             message_manager[chat_id] = pd.DataFrame({
-                'who': [],
-                'content': [],
-                'timestamp': [],
-                'replied': []
-            }, dtype={'who': 'object', 'content': 'object', 'timestamp': 'float64', 'replied': 'bool'})
-
-        # 添加新消息到DataFrame
+                'who': pd.Series([], dtype='object'),
+                'content': pd.Series([], dtype='object'),
+                'timestamp': pd.Series([], dtype='float64'),
+                'replied': pd.Series([], dtype='bool')
+            })
         new_message = pd.DataFrame({
             'who': ['对方'],
             'content': [content],
             'timestamp': [current_time],
             'replied': [False],
         })
-        if not new_message.empty:
-            message_manager[chat_id] = pd.concat([message_manager[chat_id], new_message], ignore_index=True)
+        message_manager[chat_id] = pd.concat([message_manager[chat_id], new_message], ignore_index=True)
 
     if type == 'self':  # 自己发送的消息
         if chat_id not in message_manager:
             message_manager[chat_id] = pd.DataFrame({
-                'who': [],
-                'content': [],
-                'timestamp': [],
-                'replied': []
-            }, dtype={'who': 'object', 'content': 'object', 'timestamp': 'float64', 'replied': 'bool'})
-
-        # 添加新消息到DataFrame
+                'who': pd.Series([], dtype='object'),
+                'content': pd.Series([], dtype='object'),
+                'timestamp': pd.Series([], dtype='float64'),
+                'replied': pd.Series([], dtype='bool')
+            })
         new_message = pd.DataFrame({
             'who': ['我'],
             'content': [content],
             'timestamp': [current_time],
             'replied': [True],
         })
-        if not new_message.empty:
-            message_manager[chat_id] = pd.concat([message_manager[chat_id], new_message], ignore_index=True)
+        message_manager[chat_id] = pd.concat([message_manager[chat_id], new_message], ignore_index=True)
 
 def onOneSecond():
     current_time = time.time()
@@ -108,7 +103,10 @@ def onOneSecond():
                 
 def main():
     init_log()
-    start_listen(onOneSecond, onMessage)
+    try:
+        start_listen(onOneSecond, onMessage)
+    except Exception as e:
+        log('sys', f"An error occurred: {e}\n{traceback.format_exc()}")
 
 
 if __name__ == "__main__":
