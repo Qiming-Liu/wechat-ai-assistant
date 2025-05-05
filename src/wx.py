@@ -19,10 +19,15 @@ def start_listen(emitOneSecond, emitMessage):
     while True:
         allChats = wx.GetListenMessage()
         for chat in allChats: # 对于每个人
+            who = chat.who
             messages = allChats.get(chat)
 
             for message in messages: # 对于每条消息
-                log(chat, message)
+                logJson = {
+                    'type': type,
+                    'content': message.content,
+                }
+                log(who, logJson)
                 emitMessage(chat, message)
         emitOneSecond()
         time.sleep(1)

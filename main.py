@@ -1,5 +1,5 @@
-from src.wx import start_listen, wx
-from src.ai import ai_response, send_message_to_file_helper
+from src.wx import wx, start_listen, send_message_to_file_helper
+from src.ai import ai_response
 from src.config import AUTO_REPLY_DELAY, REPLAY_LIST, SUGGEST_LIST
 from src.log import init_log
 import time
