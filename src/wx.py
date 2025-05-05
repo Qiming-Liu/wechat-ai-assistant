@@ -24,7 +24,7 @@ def start_listen(emitOneSecond, emitMessage):
 
             for message in messages: # 对于每条消息
                 logJson = {
-                    'type': type,
+                    'type': message.type,
                     'content': message.content,
                 }
                 log(who, logJson)
