@@ -107,6 +107,8 @@ def main():
         start_listen(onOneSecond, onMessage)
     except Exception as e:
         log('sys', f"An error occurred: {e}\n{traceback.format_exc()}")
+        log('sys', "Restarting application...")
+        main()
 
 
 if __name__ == "__main__":
